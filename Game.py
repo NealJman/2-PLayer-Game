@@ -1,30 +1,33 @@
 import pygame
-pygame.init()
+pygame.font.init()
+pygame.mixer.init()
 import os
 
 
 WIDTH= 900
 HEIGHT = 500
 
-
+HEALTH_FONT = pygame.font.SysFont('comicsans',30)
+WINNER_FONT = pygame.font.SysFont('comicsans', 100 )
 shipRed_dim = 100;
 shipBlack_dim = 90;
 WIN = pygame.display.set_mode((WIDTH,HEIGHT))
 pygame.display.set_caption("Pirate Ship Duel")
 
-white = (255,255,255)
+WHITE = (255,255,255)
 BLACK = (0,0,0)
 
 FPS = 60
 VELOCITY = 5
-CBALLS_VELOCITY = 4
-MAX_CBALLS = 15
+CBALLS_VELOCITY = 7
+MAX_CBALLS = 3
 
 
 RED_HIT = pygame.USEREVENT + 1
 BLACK_HIT = pygame.USEREVENT + 2
 
-
+CBALL_HIT_SOUND = pygame.mixer.Sound(os.path.join('Images&Sound','cannon.mp3' ))
+CBALL_FIRE_SOUND = pygame.mixer.Sound(os.path.join('Images&Sound','cannon-shot.wav' ))
 
 Red_Ship = pygame.image.load(os.path.join('Images&Sound','pirateShipleft.png'))
 Red_Ship = pygame.transform.scale(Red_Ship,(shipRed_dim,shipRed_dim))
@@ -45,10 +48,21 @@ Island_right2 = pygame.transform.scale(Island_right2, (50,50))
 Island_right3 = pygame.image.load(os.path.join('Images&Sound','island.png'))
 Island_right3 = pygame.transform.scale(Island_right3, (50,50))
 
-def draw_window(red,black,IslandL1,IslandL2, IslandL3, IslandR1, IslandR2, IslandR3, Red_cannonballs, Black_cannonballs):
+Sea = pygame.image.load(os.path.join('Images&Sound','sea.png'))
+Sea = pygame.transform.scale(Sea, (WIDTH,HEIGHT))
+
+def draw_window(red,black,IslandL1,IslandL2, IslandL3, IslandR1, IslandR2, IslandR3, 
+                Red_cannonballs, Black_cannonballs, red_health, black_health):
+
+    
+    WIN.blit(Sea, (0,0))
+    
+    red_health_text = HEALTH_FONT.render("Health: " +str(red_health),1, WHITE)
+    black_health_text = HEALTH_FONT.render("Health: " +str(black_health),1, WHITE)
+    WIN.blit(red_health_text, (700, 10))
+    WIN.blit(black_health_text, (10, 10))
 
 
-    WIN.fill(white)
     WIN.blit(Red_Ship, (red.x,red.y))
     WIN.blit(Black_Ship, (black.x,black.y))
     WIN.blit(Island_left1,(IslandL1.x,IslandL1.y))
@@ -99,18 +113,28 @@ def black_moves(keys_pressed, black):
 
 
 def handle_Cballs(Black_cannonballs, Red_cannonballs, IslandL1,IslandL2,IslandL3, IslandR1, IslandR2,IslandR3):
-    #[(4, 6, 10,10), (7, 6, 10,10)]
-    for cannonballs in Red_cannonballs:
-        cannonballs.x += CBALLS_VELOCITY
-        if IslandR1.colliderect(cannonballs):
-            pygame.event.post(pygame.event.Event(RED_HIT))
-            Red_cannonballs.remove(cannonballs)
 
-    for cannonballs in Black_cannonballs:
-        cannonballs.x -= CBALLS_VELOCITY
-        if IslandL1.colliderect(cannonballs):
+    for cannonball in Red_cannonballs:
+        cannonball.x += CBALLS_VELOCITY
+        if IslandR1.colliderect(cannonball):
+            pygame.event.post(pygame.event.Event(RED_HIT))
+            Red_cannonballs.remove(cannonball)
+        elif cannonball.x > WIDTH:
+            Red_cannonballs.remove(cannonball)
+
+    for cannonball in Black_cannonballs:
+        cannonball.x -= CBALLS_VELOCITY
+        if IslandL1.colliderect(cannonball):
             pygame.event.post(pygame.event.Event(BLACK_HIT))
-            Black_cannonballs.remove(cannonballs)
+            Black_cannonballs.remove(cannonball)
+        elif  cannonball.x < 0:
+             Black_cannonballs.remove(cannonball)
+
+def draw_winner(text):
+    draw_text = WINNER_FONT.render(text,1,WHITE)
+    WIN.blit(draw_text, (WIDTH/2 - draw_text.get_width()/2,HEIGHT/2 - draw_text.get_height()/2))
+    pygame.display.update()
+    pygame.time.delay(5000)
 
 def main():
 
@@ -128,6 +152,9 @@ def main():
     Red_cannonballs = []
     Black_cannonballs = []
 
+    red_health = 5
+    black_health = 5
+
     clock = pygame.time.Clock()
     run = True
     while run:
@@ -135,16 +162,38 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+                pygame.quit()
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LCTRL and len(Red_cannonballs) < MAX_CBALLS:
                     CannonBall = pygame.Rect(red.x + red.width, red.y + red.height//2 -2, 10,10)
                     Red_cannonballs.append(CannonBall)
+                    CBALL_FIRE_SOUND.play()
 
                 if event.key == pygame.K_RCTRL and len(Black_cannonballs) < MAX_CBALLS:
                     CannonBall = pygame.Rect(black.x, black.y + black.height//2 -2, 10,10)
                     Black_cannonballs.append(CannonBall)
+                    CBALL_FIRE_SOUND.play()
 
+            if event.type == RED_HIT:
+                red_health -= 1
+                CBALL_HIT_SOUND.play()
+
+            if event.type == BLACK_HIT:
+                black_health -= 1
+                CBALL_HIT_SOUND.play()
+        winner_text = ""
+        if red_health <=0:
+            
+            winner_text = "Red Ship Wins!"
+
+        if black_health <=0:
+
+            winner_text = "Black Ship Wins"
+
+        if winner_text != "":
+            draw_winner(winner_text)
+            break
         keys_pressed = pygame.key.get_pressed()
 
         red_moves(keys_pressed, red)
@@ -153,10 +202,11 @@ def main():
         handle_Cballs(Black_cannonballs, Red_cannonballs,IslandL1,IslandL2,IslandL3, IslandR1, IslandR2,IslandR3)
 
 
-        draw_window(red,black,IslandL1,IslandL2,IslandL3, IslandR1, IslandR2,IslandR3, Red_cannonballs,Black_cannonballs)
+        draw_window(red,black,IslandL1,IslandL2,IslandL3, IslandR1, 
+                    IslandR2,IslandR3, Red_cannonballs,Black_cannonballs, red_health,black_health)
         
     
-    pygame.quit()
+    main()
 
 if __name__ == "__main__":
     main()
