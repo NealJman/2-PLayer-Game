@@ -12,6 +12,7 @@ pygame.display.set_caption("Pirate Ship Duel")
 
 white = (255,255,255)
 FPS = 60
+VELOCITY = 5
 
 Red_Ship = pygame.image.load(os.path.join('Images&Sound','pirateShipleft.png'))
 Red_Ship = pygame.transform.scale(Red_Ship,(shipRed_dim,shipRed_dim))
@@ -25,6 +26,38 @@ def draw_window(red,black):
     WIN.blit(Red_Ship, (red.x,red.y))
     WIN.blit(Black_Ship, (black.x,black.y))
     pygame.display.update()
+
+def red_moves(keys_pressed, red):
+        
+         #Left
+        if keys_pressed[pygame.K_a] and red.x - VELOCITY > 100: 
+            red.x -= VELOCITY
+        #Right
+        if keys_pressed[pygame.K_d]and red.x + VELOCITY < 700: 
+            red.x += VELOCITY
+        #Up
+        if keys_pressed[pygame.K_w]and red.y - VELOCITY > 0: 
+            red.y -= VELOCITY
+        #Down
+        if keys_pressed[pygame.K_s]and red.y + VELOCITY < 400: 
+            red.y += VELOCITY
+
+
+def black_moves(keys_pressed, black):
+        
+         #Left
+        if keys_pressed[pygame.K_LEFT] and black.x - VELOCITY > 100: 
+            black.x -= VELOCITY
+        #Right
+        if keys_pressed[pygame.K_RIGHT] and black.x + VELOCITY < 700: 
+            black.x += VELOCITY
+        #Up
+        if keys_pressed[pygame.K_UP] and black.y - VELOCITY > 0: 
+            black.y -= VELOCITY
+        #Down
+        if keys_pressed[pygame.K_DOWN] and black.y + VELOCITY < 400: 
+            black.y += VELOCITY
+
 
 
 
@@ -43,7 +76,10 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
 
-        
+        keys_pressed = pygame.key.get_pressed()
+
+        red_moves(keys_pressed, red)
+        black_moves(keys_pressed, black)
 
         draw_window(red,black)
         
