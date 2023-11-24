@@ -130,14 +130,12 @@ def handle_Cballs(Black_cannonballs, Red_cannonballs, IslandL1,IslandL2,IslandL3
         if IslandR1.colliderect(cannonball):
             pygame.event.post(pygame.event.Event(R1_HIT))
             Red_cannonballs.remove(cannonball)
-        elif cannonball.x > WIDTH:
-            Red_cannonballs.remove(cannonball)
+
 
         if IslandR2.colliderect(cannonball):
             pygame.event.post(pygame.event.Event(R2_HIT))
             Red_cannonballs.remove(cannonball)
-        elif cannonball.x > WIDTH:
-            Red_cannonballs.remove(cannonball)
+
 
 
         if IslandR3.colliderect(cannonball):
@@ -145,6 +143,7 @@ def handle_Cballs(Black_cannonballs, Red_cannonballs, IslandL1,IslandL2,IslandL3
             Red_cannonballs.remove(cannonball)
         elif cannonball.x > WIDTH:
             Red_cannonballs.remove(cannonball)
+    
 
     for cannonball in Black_cannonballs:
         cannonball.x -= CBALLS_VELOCITY
@@ -152,14 +151,12 @@ def handle_Cballs(Black_cannonballs, Red_cannonballs, IslandL1,IslandL2,IslandL3
         if IslandL1.colliderect(cannonball):
             pygame.event.post(pygame.event.Event(L1_HIT))
             Black_cannonballs.remove(cannonball)
-        elif  cannonball.x < 0:
-             Black_cannonballs.remove(cannonball)
+
 
         if IslandL2.colliderect(cannonball):
             pygame.event.post(pygame.event.Event(L2_HIT))
             Black_cannonballs.remove(cannonball)
-        elif  cannonball.x < 0:
-             Black_cannonballs.remove(cannonball)
+
 
         if IslandL3.colliderect(cannonball):
             pygame.event.post(pygame.event.Event(L3_HIT))
@@ -268,6 +265,19 @@ def main():
                     black_health -= 1
                 CBALL_HIT_SOUND.play()
 
+
+            if L1_health == 0:
+                IslandL1 = pygame.Rect(50,-1000,50,50)
+            if L2_health == 0:
+                IslandL2 = pygame.Rect(50,-1000,50,50)
+            if L3_health == 0:
+                IslandL3 = pygame.Rect(50,-1000,50,50)
+            if R1_health == 0:
+                IslandR1 = pygame.Rect(50,-1000,50,50)
+            if R2_health == 0:
+                IslandR2 = pygame.Rect(50,-1000,50,50)
+            if R3_health == 0:
+                IslandR3 = pygame.Rect(50,-1000,50,50)
 
         keys_pressed = pygame.key.get_pressed()
 
