@@ -23,8 +23,12 @@ CBALLS_VELOCITY = 7
 MAX_CBALLS = 3
 
 
-RED_HIT = pygame.USEREVENT + 1
-BLACK_HIT = pygame.USEREVENT + 2
+R1_HIT = pygame.USEREVENT + 1
+L1_HIT = pygame.USEREVENT + 2
+R2_HIT = pygame.USEREVENT + 3
+R3_HIT = pygame.USEREVENT + 4
+L2_HIT = pygame.USEREVENT + 5
+L3_HIT = pygame.USEREVENT + 6
 
 CBALL_HIT_SOUND = pygame.mixer.Sound(os.path.join('Images&Sound','cannon.mp3' ))
 CBALL_FIRE_SOUND = pygame.mixer.Sound(os.path.join('Images&Sound','cannon-shot.wav' ))
@@ -52,7 +56,8 @@ Sea = pygame.image.load(os.path.join('Images&Sound','sea.png'))
 Sea = pygame.transform.scale(Sea, (WIDTH,HEIGHT))
 
 def draw_window(red,black,IslandL1,IslandL2, IslandL3, IslandR1, IslandR2, IslandR3, 
-                Red_cannonballs, Black_cannonballs, red_health, black_health):
+                Red_cannonballs, Black_cannonballs, red_health, black_health,
+                R1_health,R2_health,R3_health,L1_health,L2_health,L3_health):
 
     
     WIN.blit(Sea, (0,0))
@@ -65,12 +70,18 @@ def draw_window(red,black,IslandL1,IslandL2, IslandL3, IslandR1, IslandR2, Islan
 
     WIN.blit(Red_Ship, (red.x,red.y))
     WIN.blit(Black_Ship, (black.x,black.y))
-    WIN.blit(Island_left1,(IslandL1.x,IslandL1.y))
-    WIN.blit(Island_left2,(IslandL2.x,IslandL2.y))
-    WIN.blit(Island_left3,(IslandL3.x,IslandL3.y))
-    WIN.blit(Island_right1,(IslandR1.x, IslandR1.y))
-    WIN.blit(Island_right2,(IslandR2.x,IslandR2.y))
-    WIN.blit(Island_right3,(IslandR3.x,IslandR3.y))
+    if L1_health >= 1:
+        WIN.blit(Island_left1,(IslandL1.x,IslandL1.y))
+    if L2_health >= 1:
+        WIN.blit(Island_left2,(IslandL2.x,IslandL2.y))
+    if L3_health >= 1:
+        WIN.blit(Island_left3,(IslandL3.x,IslandL3.y))
+    if R1_health >= 1:
+         WIN.blit(Island_right1,(IslandR1.x, IslandR1.y))
+    if R2_health >= 1:
+         WIN.blit(Island_right2,(IslandR2.x,IslandR2.y))
+    if R3_health >= 1:
+        WIN.blit(Island_right3,(IslandR3.x,IslandR3.y))
 
     for Cball in Red_cannonballs:
         pygame.draw.rect(WIN, BLACK, Cball);
@@ -117,18 +128,46 @@ def handle_Cballs(Black_cannonballs, Red_cannonballs, IslandL1,IslandL2,IslandL3
     for cannonball in Red_cannonballs:
         cannonball.x += CBALLS_VELOCITY
         if IslandR1.colliderect(cannonball):
-            pygame.event.post(pygame.event.Event(RED_HIT))
+            pygame.event.post(pygame.event.Event(R1_HIT))
+            Red_cannonballs.remove(cannonball)
+        elif cannonball.x > WIDTH:
+            Red_cannonballs.remove(cannonball)
+
+        if IslandR2.colliderect(cannonball):
+            pygame.event.post(pygame.event.Event(R2_HIT))
+            Red_cannonballs.remove(cannonball)
+        elif cannonball.x > WIDTH:
+            Red_cannonballs.remove(cannonball)
+
+
+        if IslandR3.colliderect(cannonball):
+            pygame.event.post(pygame.event.Event(R3_HIT))
             Red_cannonballs.remove(cannonball)
         elif cannonball.x > WIDTH:
             Red_cannonballs.remove(cannonball)
 
     for cannonball in Black_cannonballs:
         cannonball.x -= CBALLS_VELOCITY
+
         if IslandL1.colliderect(cannonball):
-            pygame.event.post(pygame.event.Event(BLACK_HIT))
+            pygame.event.post(pygame.event.Event(L1_HIT))
             Black_cannonballs.remove(cannonball)
         elif  cannonball.x < 0:
              Black_cannonballs.remove(cannonball)
+
+        if IslandL2.colliderect(cannonball):
+            pygame.event.post(pygame.event.Event(L2_HIT))
+            Black_cannonballs.remove(cannonball)
+        elif  cannonball.x < 0:
+             Black_cannonballs.remove(cannonball)
+
+        if IslandL3.colliderect(cannonball):
+            pygame.event.post(pygame.event.Event(L3_HIT))
+            Black_cannonballs.remove(cannonball)
+        elif  cannonball.x < 0:
+             Black_cannonballs.remove(cannonball)
+
+
 
 def draw_winner(text):
     draw_text = WINNER_FONT.render(text,1,WHITE)
@@ -152,8 +191,15 @@ def main():
     Red_cannonballs = []
     Black_cannonballs = []
 
-    red_health = 5
-    black_health = 5
+    red_health = 15
+    black_health = 15
+
+    L1_health = 5
+    L2_health = 5
+    L3_health=5
+    R1_health=5
+    R2_health=5
+    R3_health=5
 
     clock = pygame.time.Clock()
     run = True
@@ -175,13 +221,66 @@ def main():
                     Black_cannonballs.append(CannonBall)
                     CBALL_FIRE_SOUND.play()
 
-            if event.type == RED_HIT:
-                red_health -= 1
+            if event.type == R1_HIT:
+                
+                R1_health -=1
+
+                if R1_health >= 0:
+                    red_health -= 1
+
                 CBALL_HIT_SOUND.play()
 
-            if event.type == BLACK_HIT:
-                black_health -= 1
+            if event.type == R2_HIT:
+                
+                R2_health -=1
+
+                if R2_health >= 0:
+                    red_health -= 1
                 CBALL_HIT_SOUND.play()
+
+            if event.type == R3_HIT:
+            
+                R3_health -=1
+
+                if R3_health >= 0:
+                    red_health -= 1
+                CBALL_HIT_SOUND.play()
+
+            if event.type == L1_HIT:
+
+                L1_health -=1
+                if L1_health>=0:
+                    black_health -= 1
+
+                CBALL_HIT_SOUND.play()
+
+
+            if event.type == L2_HIT:
+                L2_health -=1
+                if L2_health>=0:
+                    black_health -= 1
+                CBALL_HIT_SOUND.play()
+
+
+            if event.type == L3_HIT:
+                L3_health -=1
+                if L3_health>=0:
+                    black_health -= 1
+                CBALL_HIT_SOUND.play()
+
+
+        keys_pressed = pygame.key.get_pressed()
+
+        red_moves(keys_pressed, red)
+        black_moves(keys_pressed, black)
+
+        handle_Cballs(Black_cannonballs, Red_cannonballs,IslandL1,IslandL2,IslandL3, IslandR1, IslandR2,IslandR3)
+
+
+        draw_window(red,black,IslandL1,IslandL2,IslandL3, IslandR1, 
+                    IslandR2,IslandR3, Red_cannonballs,Black_cannonballs, red_health,black_health,
+                    R1_health,R2_health,R3_health,L1_health,L2_health,L3_health)
+        
         winner_text = ""
         if red_health <=0:
             
@@ -194,17 +293,7 @@ def main():
         if winner_text != "":
             draw_winner(winner_text)
             break
-        keys_pressed = pygame.key.get_pressed()
 
-        red_moves(keys_pressed, red)
-        black_moves(keys_pressed, black)
-
-        handle_Cballs(Black_cannonballs, Red_cannonballs,IslandL1,IslandL2,IslandL3, IslandR1, IslandR2,IslandR3)
-
-
-        draw_window(red,black,IslandL1,IslandL2,IslandL3, IslandR1, 
-                    IslandR2,IslandR3, Red_cannonballs,Black_cannonballs, red_health,black_health)
-        
     
     main()
 
