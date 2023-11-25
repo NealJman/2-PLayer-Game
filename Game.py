@@ -3,7 +3,7 @@ pygame.font.init()
 pygame.mixer.init()
 import os
 
-
+# Screen dimensions
 WIDTH= 900
 HEIGHT = 500
 
@@ -77,9 +77,9 @@ def draw_window(red,black,IslandL1,IslandL2, IslandL3, IslandR1, IslandR2, Islan
     if L3_health >= 1:
         WIN.blit(Island_left3,(IslandL3.x,IslandL3.y))
     if R1_health >= 1:
-         WIN.blit(Island_right1,(IslandR1.x, IslandR1.y))
+        WIN.blit(Island_right1,(IslandR1.x, IslandR1.y))
     if R2_health >= 1:
-         WIN.blit(Island_right2,(IslandR2.x,IslandR2.y))
+        WIN.blit(Island_right2,(IslandR2.x,IslandR2.y))
     if R3_health >= 1:
         WIN.blit(Island_right3,(IslandR3.x,IslandR3.y))
 
@@ -94,10 +94,10 @@ def draw_window(red,black,IslandL1,IslandL2, IslandL3, IslandR1, IslandR2, Islan
 def red_moves(keys_pressed, red):
         
         # Left
-        if keys_pressed[pygame.K_a] and red.x - VELOCITY > 100: 
+        if keys_pressed[pygame.K_a] and red.x - VELOCITY > 120: 
             red.x -= VELOCITY
         #Right
-        if keys_pressed[pygame.K_d]and red.x + VELOCITY < 700: 
+        if keys_pressed[pygame.K_d]and red.x + VELOCITY < 680: 
             red.x += VELOCITY
         #Up
         if keys_pressed[pygame.K_w]and red.y - VELOCITY > 0: 
@@ -109,11 +109,11 @@ def red_moves(keys_pressed, red):
 
 def black_moves(keys_pressed, black):
         
-         #Left
-        if keys_pressed[pygame.K_LEFT] and black.x - VELOCITY > 100: 
+        #Left
+        if keys_pressed[pygame.K_LEFT] and black.x - VELOCITY > 120: 
             black.x -= VELOCITY
         #Right
-        if keys_pressed[pygame.K_RIGHT] and black.x + VELOCITY < 700: 
+        if keys_pressed[pygame.K_RIGHT] and black.x + VELOCITY < 680: 
             black.x += VELOCITY
         #Up
         if keys_pressed[pygame.K_UP] and black.y - VELOCITY > 0: 
@@ -145,6 +145,8 @@ def handle_Cballs(Black_cannonballs, Red_cannonballs, IslandL1,IslandL2,IslandL3
             Red_cannonballs.remove(cannonball)
     
 
+
+
     for cannonball in Black_cannonballs:
         cannonball.x -= CBALLS_VELOCITY
 
@@ -162,7 +164,7 @@ def handle_Cballs(Black_cannonballs, Red_cannonballs, IslandL1,IslandL2,IslandL3
             pygame.event.post(pygame.event.Event(L3_HIT))
             Black_cannonballs.remove(cannonball)
         elif  cannonball.x < 0:
-             Black_cannonballs.remove(cannonball)
+            Black_cannonballs.remove(cannonball)
 
 
 
@@ -170,7 +172,7 @@ def draw_winner(text):
     draw_text = WINNER_FONT.render(text,1,WHITE)
     WIN.blit(draw_text, (WIDTH/2 - draw_text.get_width()/2,HEIGHT/2 - draw_text.get_height()/2))
     pygame.display.update()
-    pygame.time.delay(5000)
+    pygame.time.delay(4000)
 
 def main():
 
