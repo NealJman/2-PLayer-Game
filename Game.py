@@ -8,7 +8,7 @@ WIDTH= 900
 HEIGHT = 500
 
 HEALTH_FONT = pygame.font.SysFont('comicsans',30)
-WINNER_FONT = pygame.font.SysFont('comicsans', 100 )
+WINNER_FONT = pygame.font.SysFont('impact', 100 )
 shipRed_dim = 100;
 shipBlack_dim = 90;
 WIN = pygame.display.set_mode((WIDTH,HEIGHT))
